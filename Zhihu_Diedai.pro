@@ -16,3 +16,8 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp
+
+OTHER_FILES += \
+    READFolloweetest.py \
+    Reader.py \
+    Readee.py

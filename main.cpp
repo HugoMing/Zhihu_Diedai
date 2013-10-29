@@ -63,7 +63,7 @@ int Read(string hashid,string ID,int Flag,map<string,Info> &Map,int &count)
     {
         Flag_='0';
     }
-    string aca="C:\\Python33\\READFolloweetest.py   "+hashid+"  "+ID+"  " +Flag_;
+    string aca="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\READFolloweetest.py   "+hashid+"  "+ID+"  " +Flag_;
     FILE* file1;
     string filename1="c:\\1\\"+ID+".txt";
     file1=fopen(filename1.c_str(),"r");
@@ -150,7 +150,7 @@ int Read(string hashid,string ID,int Flag,map<string,Info> &Map,int &count)
     //cout<<"agree="<<tk->agree<<endl;
     count++;
     cout<<"People has Readen is "<<count<<endl;
-    if(count==4)
+    if(count==400)
     {
         int test;
         test=1;
@@ -160,22 +160,6 @@ int Read(string hashid,string ID,int Flag,map<string,Info> &Map,int &count)
     {
         string pk=tk->ID;
         (Map)[pk]=*tk;
-        if(atoi(tk->follower.c_str())==0)
-        {
-            cout<<atoi(tk->follower.c_str());
-
-            cout<<"Ready to read"<<tk->Name<<endl;
-            tk->show();
-            Read(tk->HashID,tk->ID,0,Map,count);
-
-        }
-        else
-        {
-            cout<<"Ready to read"<<tk->Name<<endl;
-            tk->show();
-            Read(tk->HashID,tk->ID,1,Map,count);
-            cout<<"follwer=1"<<tk->ID;
-        }
     }
     else
     {
