@@ -62,6 +62,37 @@ friend    bool operator < (Info a,Info b)
          agree="";
          return;
     }
+    void readLine(string cin)
+    {
+
+        int PosEnd=0;
+
+        PosEnd=cin.find('\t');
+        this->Name=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->Sign=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->agree=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->answers=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->asks=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->follower=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->ID=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        PosEnd=cin.find('\t');
+        this->HashID=cin.substr(0,PosEnd);
+        cin.erase(0,PosEnd+1);
+        return;
+    }
 };
 
 string  returnErFileName(string ID)
@@ -70,51 +101,78 @@ string  returnErFileName(string ID)
     a="c:\\1\\"+ID+"_flower.txt";
     return a;
 }
-char*  convertToChar(int a)
+string  convertToChar(int a)
 {
-    char *t;
-    t=new char[100];
+    string k;
+    char *t=new char[100];
     sprintf(t,"%d",a);//内存泄漏
-    return t;
+    k+=t;
+    return k;
 }
 string  returnErpyCommand(Info  ID)
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
     cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
+    Command+="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py    ";
     if(number>500)
     {
         while(number>500)
         {
-            Command+="  C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Reader.py     "+ID.HashID+"    "+ID.ID+"    "+convertToChar(number-500)+"     "+convertToChar(number)+"   "+ID.ID+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt"+"   &";
+            Command+="$##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(number-500)+"##"+convertToChar(number)+"##"+"Buf"+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt"+"##";
             number-=500;
         }
     }
-    Command+="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Reader.py      "+ID.HashID+"    "+ID.ID+"    "+convertToChar(0)+"     "+convertToChar(500)+"   "+ID.ID+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt"+"&";
+    Command+="$"+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(500)+"##"+"Buf"+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt";
     //合并文件
-    number=atoi(ID.follower.c_str());
-
-    if(number<500)
-    {
-       Command+="&copy  "+ID.ID+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
-    }
-    else
-    {
-       Command+="&copy  "+ID.ID+"("+convertToChar((number%500?1:0))+").txt  ";
-       while(number>500)
-       {
-           Command+="+ "+ID.ID+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt   ";
-           number-=500;
-           cout<<"number ="<<number<<endl;
-           cout<<"number/500+(number%500?1:0)"<<((number/500)+((number%500?1:0)))<<endl;
-       }
-       Command+="c:\\1\\"+ID.ID+"_flower.txt";
-    }
-    cout<<"Command="<<Command<<endl;
+    cout<<"Command = "<<Command<<endl;
     return Command;
 
 }
-set<Info> cut(set<Info> NeedToCut,map<string,Info> Map)
+string returnCopyBuf(Info ID)
+{
+    string Command;
+    int    number=atoi(ID.follower.c_str());
+
+    if(number<500)
+    {
+       Command+="copy  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
+    }
+    else
+    {
+       Command+="copy  Buf("+convertToChar((number%500?1:0))+").txt  ";
+       while(number>500)
+       {
+           Command+=" +   Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt   ";
+           number-=500;
+       }
+       Command+="c:\\1\\"+ID.ID+"_flower.txt";
+    }
+    cout<<"Copy_Command = "<<Command<<endl;
+    return Command;
+}
+string returnDelBuf(Info ID)
+{
+    string Command;
+    int    number=atoi(ID.follower.c_str());
+
+    if(number<500)
+    {
+       Command+="del  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
+    }
+    else
+    {
+       Command+="del  Buf("+convertToChar((number%500?1:0))+").txt  ";
+       while(number>500)
+       {
+           Command+=" +  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt   ";
+           number-=500;
+       }
+    }
+    cout<<"Del_Command = "<<Command<<endl;
+    return Command;
+}
+set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
 {
     set<Info>     NeedToRead;
     Info          Buf;
@@ -125,7 +183,6 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> Map)
         string read;
         /*************************************/
         FILE *file;
-        int i=0;//&&记录总数
         string::size_type PosBegin,PosEnd;
         /*************************************/
         file=fopen(returnErFileName(a->ID).c_str(),"r");
@@ -178,7 +235,12 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> Map)
         cout<<"************************************************************"<<endl;
         if(Map.count(Buf.ID)==0)
         {
-            NeedToRead.insert(Buf);
+            if((atoi(Buf.answers.c_str()))>1)
+            {NeedToRead.insert(Buf);}
+            else
+            {
+                Map[Buf.ID]=Buf;
+            }
         }
         Buf.clear();
         PosEnd=read.find("zg-right",PosBegin)+8;
@@ -206,6 +268,8 @@ set<Info> Read(set<Info> NeedToRead,map<string,Info> &Map)
         if(file==NULL)
         {
         system(returnErpyCommand(*a).c_str());
+        system(returnCopyBuf(*a).c_str());
+        system(returnDelBuf(*a).c_str());
         }
 
         (Map)[a->ID]=*a;

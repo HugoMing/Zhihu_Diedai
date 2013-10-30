@@ -22,7 +22,8 @@ SOURCES += main.cpp \
 OTHER_FILES += \
     READFolloweetest.py \
     Reader.py \
-    123.txt
+    123.txt \
+    threadtry.py
 
 HEADERS += \
     handle.h
