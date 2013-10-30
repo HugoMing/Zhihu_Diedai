@@ -49,7 +49,7 @@ int main(void)
     ReadyToRead.ID=ID;
     ReadyToRead.Name="GayScript";
     ReadyToRead.HashID=hashid;
-    ReadyToRead.follower=convertToChar(45700);
+    ReadyToRead.follower=convertToChar(400);
 
     NeedToRead.insert(ReadyToRead);
     NeedToCut.insert(ReadyToRead);
@@ -70,13 +70,19 @@ int main(void)
         fputs(SavetoFile_String.c_str(),SavetoFile);
     }
     fclose(SavetoFile);
-    SavetoFile = fopen("d:\\NextHashToRead.txt","w");
-    fputs((NeedToRead.begin()->HashID+'\n'+NeedToRead.begin()->ID+'\n').c_str(),SavetoFile);
-    fclose(SavetoFile);
+
+
+    if(!NeedToRead.empty())
+    {
+        SavetoFile = fopen("d:\\NextHashToRead.txt","w");
+        string k("1");
+        k=(NeedToRead.begin())->HashID+"\n"+NeedToRead.begin()->ID+" \n";
+        fputs(k.c_str(),SavetoFile);
+        fclose(SavetoFile);
+    }
     /************备份完成***************/
 
     }
-    getchar();
     /************备份数据*************/
     map<string,Info>::iterator readmap;
     FILE* SavetoFile;
@@ -89,6 +95,7 @@ int main(void)
     }
     fclose(SavetoFile);
     /************备份完成***************/
+    cout<<"Zhihu has readen"<<endl;
     return 0;
 }
 

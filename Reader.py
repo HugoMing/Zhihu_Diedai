@@ -9,8 +9,8 @@ def_ID    =sys.argv[2]
 def_Begin   =sys.argv[3]
 def_End     =sys.argv[4]
 def_FileName =sys.argv[5]
-
-print("def_FileName="+def_FileName)
+#print("hashID=" +def_HashID)
+#print("def_FileName="+def_FileName)
 print("def_Begin="+def_Begin)
 _xsrf ='70d29039e3e8481387e68ca8b5d24c55'#黄中华的浏览器标识符
 hashid=def_HashID
@@ -70,7 +70,7 @@ while((len(k.get('msg'))==10 or len(k.get('msg'))==20 )and (len(filecontent)!=0)
     Begin+=len(k.get('msg'))
     print(str(Begin)+" people has been read")
     save=charstring
-print(def_ID+"has readen")
+#print(def_ID+"has readen")
 
 
 file=open(def_FileName,'wb')

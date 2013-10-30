@@ -9,6 +9,10 @@
 #include <vector>
 #include <stdlib.h>
 #include <set>
+
+#define   MAXCONNECT   60//最大连接数
+#define   LESSGROUP    100//最小组距
+#define   CELLLENTH    6000 //分界线
 using namespace std;
 class Info
 {
@@ -115,15 +119,16 @@ string  returnErpyCommand(Info  ID)
     int    number=atoi(ID.follower.c_str());
     cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
     Command+="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py    ";
-    if(number>500)
-    {
-        while(number>500)
+    int length = (number<CELLLENTH)?LESSGROUP:(number/MAXCONNECT);
+
+
+        while(number>length)
         {
-            Command+="$##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(number-500)+"##"+convertToChar(number)+"##"+"Buf"+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt"+"##";
-            number-=500;
+            Command+="##"+ID.HashID+"##"+"N"+"##"+convertToChar(number-length)+"##"+convertToChar(number)+"##"+"Buf"+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt"+"##$";
+            number-=length;
         }
-    }
-    Command+="$"+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(500)+"##"+"Buf"+"("+convertToChar(int(number/500)+(number%500?1:0))+").txt";
+
+    Command+=""+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(length)+"##"+"Buf"+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt";
     //合并文件
     cout<<"Command = "<<Command<<endl;
     return Command;
@@ -133,18 +138,18 @@ string returnCopyBuf(Info ID)
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
-
-    if(number<500)
+    int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
+    if(number<=length)
     {
-       Command+="copy  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
+       Command+="copy  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
     }
     else
     {
-       Command+="copy  Buf("+convertToChar((number%500?1:0))+").txt  ";
-       while(number>500)
+       Command+="copy  Buf("+convertToChar((number%length?1:0))+").txt  ";
+       while(number>length)
        {
-           Command+=" +   Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt   ";
-           number-=500;
+           Command+=" +   Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt   ";
+           number-=length;
        }
        Command+="c:\\1\\"+ID.ID+"_flower.txt";
     }
@@ -155,18 +160,18 @@ string returnDelBuf(Info ID)
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
-
-    if(number<500)
+    int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
+    if(number<=length)
     {
-       Command+="del  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
+       Command+="del  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt  ";
     }
     else
     {
-       Command+="del  Buf("+convertToChar((number%500?1:0))+").txt  ";
-       while(number>500)
+       Command+="del  Buf("+convertToChar((number%length?1:0))+").txt  ";
+       while(number>length)
        {
-           Command+=" +  Buf("+convertToChar(int(number/500)+(number%500?1:0))+").txt   ";
-           number-=500;
+           Command+=" +  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt   ";
+           number-=length;
        }
     }
     cout<<"Del_Command = "<<Command<<endl;
