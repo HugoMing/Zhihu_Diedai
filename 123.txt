@@ -1,0 +1,135 @@
+/*#include "handle.h"
+
+int Read(string hashid,string ID,int Flag,map<string,Info> &Map,int &count)
+{
+
+    cout<<"hashid="<<hashid<<endl;
+    cout<<"ID="<<ID<<endl;
+    cout<<"Flag="<<Flag<<endl;
+    char Flag_;
+    if(Flag)
+    {
+        Flag_='1';
+    }
+    else
+    {
+        Flag_='0';
+    }
+    string aca="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\READFolloweetest.py   "+hashid+"  "+ID+"  " +Flag_;
+    FILE* file1;
+    string filename1="c:\\1\\"+ID+".txt";
+    file1=fopen(filename1.c_str(),"r");
+    if(file1==NULL)
+    {
+    system(aca.c_str());
+    fclose(file1);
+    }
+    else
+    {
+     fclose(file1);
+    }
+    cout<<aca;
+    //system("chrome");r
+    char readfile[LENGTH];
+    string   read;
+    /*****************/
+    /*/打开文件
+    FILE* file;
+    string filename="c:\\1\\"+ID+".txt";
+    file=fopen(filename.c_str(),"r");
+        if(file==NULL||(count)>READLENGTH)
+    {
+        if(file==NULL)
+            {cout<<ID<<"hasn't exist";
+            }
+        else
+        {
+            cout<<"People read end,the count is "<<count<<endl;
+        }
+        return 1;
+    }
+    while(!feof(file))
+    {
+        fgets(readfile,LENGTH-2,file);
+        read+=readfile;
+    }
+    fclose(file);
+    /****************/
+/*
+    string::size_type PosBegin=0;
+    string::size_type PosEnd=0;
+    int i = 0;
+    while(read.length()>200)
+    {
+        cout<<endl;
+    Info    *tk=new Info;
+    PosBegin= read.find("tf-");
+    tk->HashID=read.substr(PosBegin+3,32);
+    //cout<<"HashID="<<tk->HashID<<endl;
+    PosBegin= read.find("title=")+7;
+    PosEnd  = read.find("\"",PosBegin);
+    tk->Name= read.substr(PosBegin,PosEnd-PosBegin);
+    cout<<"Name="<<tk->Name<<endl;
+
+    PosBegin= read.find("p$t$")+4;
+    PosEnd  = read.find("\"",PosBegin);
+    tk->ID= read.substr(PosBegin,PosEnd-PosBegin);
+    cout<<"ID="<<tk->ID<<endl;
+
+    PosBegin= read.find("gray\">")+6;
+    PosEnd  = read.find("</div>",PosBegin);
+    tk->Sign= read.substr(PosBegin,PosEnd-PosBegin);
+    //cout<<"Sign="<<tk->Sign<<endl;
+
+    PosBegin= read.find("normal")+8;
+    PosEnd  = read.find(" ",PosBegin);
+    tk->follower= read.substr(PosBegin,PosEnd-PosBegin);
+    //cout<<"folloewe="<<tk->follower<<endl;
+
+    PosBegin= read.find("normal",PosEnd)+8;
+    PosEnd  = read.find(" ",PosBegin);
+    tk->asks= read.substr(PosBegin,PosEnd-PosBegin);
+    //cout<<"asks="<<tk->asks<<endl;
+
+    PosBegin= read.find("normal",PosEnd)+8;
+    PosEnd  = read.find(" ",PosBegin);
+    tk->answers= read.substr(PosBegin,PosEnd-PosBegin);
+    //cout<<"answer="<<tk->answers<<endl;
+
+    PosBegin= read.find("normal",PosEnd)+8;
+    PosEnd  = read.find(" ",PosBegin);
+    tk->agree= read.substr(PosBegin,PosEnd-PosBegin);
+    //cout<<"agree="<<tk->agree<<endl;
+    count++;
+    cout<<"People has Readen is "<<count<<endl;
+    if(count==400)
+    {
+        int test;
+        test=1;
+    }
+    cout<<"************************************************************"<<endl;
+    if(Map.count(tk->ID)==0)
+    {
+        string pk=tk->ID;
+        (Map)[pk]=*tk;
+    }
+    else
+    {
+
+    }
+
+    PosEnd=read.find("zg-right",PosBegin)+8;
+
+    if((read.find("zg-right",PosBegin))==string::npos)
+    {
+        PosEnd=read.length();
+    }
+    read.erase(0,PosEnd);
+    i++;
+    cout<<i;
+    }
+
+    cout<<ID<<"has readen";
+    return 0;
+}
+*/

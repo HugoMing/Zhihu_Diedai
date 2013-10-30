@@ -15,9 +15,14 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    handle.cpp \
+    threadtry.cpp
 
 OTHER_FILES += \
     READFolloweetest.py \
     Reader.py \
-    Readee.py
+    123.txt
+
+HEADERS += \
+    handle.h
