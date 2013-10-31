@@ -125,4 +125,4 @@ for k in thread:
 print("All Error is"+str(ErrorCount))        
 while ThreadCount>10 :
     print("Process nearly end,Now there are "+str(ThreadCount)+"thread running ")
-    time.sleep(15)
+    time.sleep(5)

@@ -15,9 +15,8 @@ CONFIG   -= app_bundle
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    handle.cpp \
-    threadtry.cpp
+SOURCES += \
+    main.cpp
 
 OTHER_FILES += \
     READFolloweetest.py \

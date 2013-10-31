@@ -41,6 +41,7 @@ public:
         cout<<"ID="<<ID<<endl;
         cout<<"Name="<<Name<<endl;
         cout<<"Sign="<<Sign<<endl;
+        cout<<"answers="<<answers<<endl;
         cout<<"HashID="<<HashID<<endl;
         return;
     }
@@ -198,7 +199,7 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         }
         while(!feof(file))
         {
-            fscanf(file,"%s",readfile);
+            fgets(readfile,LENGTH,file);
             read+=readfile;
         }
        // cout<<read<<endl;
@@ -217,7 +218,7 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         PosBegin= read.find("p$t$")+4;
         PosEnd  = read.find("\"",PosBegin);
         Buf.ID= read.substr(PosBegin,PosEnd-PosBegin);
-        cout<<"ID="<<Buf.ID<<endl;
+        //cout<<"ID="<<Buf.ID<<endl;
 
         PosBegin= read.find("gray\">")+6;
         PosEnd  = read.find("</div>",PosBegin);
@@ -225,7 +226,9 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         //cout<<"Sign="<<Buf.Sign<<endl;
 
         PosBegin= read.find("normal")+8;
+        //cout<<"Begin = "<<PosBegin<<endl;
         PosEnd  = read.find(" ",PosBegin);
+        //cout<<"End   = "<<PosEnd<<endl;//因为使用了%s导致所有的空格都被滤掉了
         Buf.follower= read.substr(PosBegin,PosEnd-PosBegin);
         //cout<<"folloewe="<<Buf.follower<<endl;
 
@@ -247,9 +250,12 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         if(Map.count(Buf.ID)==0)
         {
             if((atoi(Buf.answers.c_str()))>1)
-            {NeedToRead.insert(Buf);}
+            {
+                NeedToRead.insert(Buf);
+            }
             else
             {
+                Buf.show();
                 Map[Buf.ID]=Buf;
             }
         }
@@ -261,7 +267,7 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         }
         read.erase(0,PosEnd);
         i++;
-        cout<<i;
+        cout<<i<<" people has read "<<endl;
         }
     }
     return NeedToRead;
@@ -303,7 +309,7 @@ set<Info> Read(set<Info> NeedToRead,map<string,Info> &Map)
         fgets(readfile,LENGTH-2,CpRead);
         cout<<"Del Command = "<<readfile<<endl;
         system(readfile);
-        fgetc(CpRead);
+        //fgetc(CpRead);各种囧，取消getc之后会多读取一条Del指令，不过，幸而无伤大雅
     }
     fclose(CpRead);
     /**********************************/

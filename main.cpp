@@ -3,11 +3,6 @@
 //#include <thread>
 #include "handle.h"
 
-void hello()
-{
-    cout<<"hello world"<<endl;
-    return;
-}
 
 int main(void)
 {
@@ -19,25 +14,28 @@ int main(void)
     set<Info> NeedToRead;
     set<Info> NeedToCut;
     /***********读取历史纪录**************/
-    FILE* historyRead=fopen("D:\\123.txt","r");
+    FILE* historyRead=fopen("D:\\ZhihuMap.txt","r");//试试改用SSD速度能快点不,SSD读取24M的时候24秒 ， 机械硬盘也是24秒。表示不是读取的问题
     string  HisRead;
     char    read_file_his[LENGTH];
     if(historyRead==NULL)
     {
         cout<<"错误，无法检测到历史纪录"<<endl;
-        return 0;
+        cout<<"作为新文件进行读取"<<endl;
     }
-    Info Buf_read;
-    while(!feof(historyRead))
+    else
     {
-        fscanf(historyRead,"%s",read_file_his);
-        HisRead=read_file_his;
-        Buf_read.readLine(HisRead);
-        Map_all[Buf_read.ID]=Buf_read;
-        Buf_read.clear();
-        i++;
+        Info Buf_read;
+        while(!feof(historyRead))
+        {
+            fgets(read_file_his,LENGTH,historyRead);//此处必须用fgets，否则读取不到‘\t’
+            HisRead=read_file_his;
+            Buf_read.readLine(HisRead);
+            Map_all[Buf_read.ID]=Buf_read;
+            Buf_read.clear();
+            i++;
+        }
+        fclose(historyRead);
     }
-    fclose(historyRead);
     historyRead=fopen("D:\\NextHashToRead.txt","r");
     if(historyRead==NULL)
     {
@@ -48,16 +46,16 @@ int main(void)
     {
         while(!feof(historyRead))
         {
-            fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！
-            if(read_file_his[0]!='\0'||read_file_his[0]!='\n')
-            {
-                continue;
-            }
+            fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！but fscanf读取不到‘\t’所以必须要用==去判断是否已读取之文件结尾
             ReadyToRead.HashID=read_file_his;
             fscanf(historyRead,"%s",read_file_his);
             ReadyToRead.ID=read_file_his;
             fscanf(historyRead,"%s",read_file_his);
             ReadyToRead.follower=read_file_his;
+            if(ReadyToRead.HashID==ReadyToRead.ID&&ReadyToRead.ID==ReadyToRead.follower)
+            {
+                continue;
+            }
             NeedToRead.insert(ReadyToRead);
             NeedToCut.insert(ReadyToRead);//无意义，只是为了能让程序运行起来。
             ReadyToRead.clear();
@@ -75,35 +73,21 @@ int main(void)
 
 
     map<string,Info> &y=Map_all;
-
-
-/*
-
-    ReadyToRead.ID=ID;
-
-    ReadyToRead.Name="GayScript";
-
-    ReadyToRead.HashID=hashid;
-
-
-    ReadyToRead.follower=convertToChar(3300);
-
-    NeedToRead.insert(ReadyToRead);
-    NeedToCut.insert(ReadyToRead);*/
-
-
     while(NeedToCut.size()!=0)
     {
+        int ibuffer=i;
     NeedToCut= Read(NeedToRead,y);
     NeedToRead=cut(NeedToCut,y,i);
+    cout<<i-ibuffer<<" has been added"<<endl;
+    ibuffer=i;
     /************备份数据*************/
     map<string,Info>::iterator readmap;
     FILE* SavetoFile;
-    SavetoFile=fopen("d:\\123.txt","w+");
+    SavetoFile=fopen("D:\\ZhihuMap.txt","w+");
     string SavetoFile_String;
     for(readmap = Map_all.begin();readmap!=Map_all.end();readmap++)
     {
-        SavetoFile_String=readmap->second.content();
+        SavetoFile_String=(readmap->second).content();
         fputs(SavetoFile_String.c_str(),SavetoFile);
     }
     fclose(SavetoFile);
@@ -114,7 +98,8 @@ int main(void)
         SavetoFile = fopen("d:\\NextHashToRead.txt","w");
         string k("1");
         set<Info>::iterator ak=NeedToRead.begin();
-        while (ak!=NeedToRead.end()) {
+        while (ak!=NeedToRead.end())
+        {
             k=ak->HashID+"\n"+ak->ID+" \n"+ak->follower+"\n";
             fputs(k.c_str(),SavetoFile);
             ak++;
@@ -127,11 +112,12 @@ int main(void)
     /************备份数据*************/
     map<string,Info>::iterator readmap;
     FILE* SavetoFile;
-    SavetoFile=fopen("d:\\123.txt","w+");
+    SavetoFile=fopen("d:\\ZhihuMap.txt","w+");
     string SavetoFile_String;
     for(readmap = Map_all.begin();readmap!=Map_all.end();readmap++)
     {
-        SavetoFile_String=readmap->second.content();
+        (readmap->second).show();
+        SavetoFile_String=(readmap->second).content();
         fputs(SavetoFile_String.c_str(),SavetoFile);
     }
     fclose(SavetoFile);
