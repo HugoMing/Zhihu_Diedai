@@ -117,7 +117,7 @@ string  returnErpyCommand(Info  ID)
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
-    cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
+    //cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
     int length = (number<CELLLENTH)?LESSGROUP:(number/MAXCONNECT);
         while(number>length)
         {
@@ -192,12 +192,16 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
         string::size_type PosBegin,PosEnd;
         /*************************************/
         file=fopen(returnErFileName(a->ID).c_str(),"r");
+        if(file==NULL)
+        {
+            continue;
+        }
         while(!feof(file))
         {
-            fgets(readfile,LENGTH-2,file);
+            fscanf(file,"%s",readfile);
             read+=readfile;
         }
-        cout<<read<<endl;
+       // cout<<read<<endl;
         fclose(file);
         /*************************************/
         while(read.length()>200)
@@ -293,7 +297,7 @@ set<Info> Read(set<Info> NeedToRead,map<string,Info> &Map)
     char          readfile[LENGTH];
     while(!feof(CpRead))
     {
-        fgets(readfile,LENGTH-2,CpRead);
+        fgets(readfile,LENGTH-2,CpRead);//此处只能用gets
         cout<<"Copy Command = "<<readfile<<endl;
         system(readfile);
         fgets(readfile,LENGTH-2,CpRead);

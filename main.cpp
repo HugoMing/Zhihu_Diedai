@@ -12,7 +12,12 @@ void hello()
 int main(void)
 {
     map<string,Info> Map_all;
+    int z=0;
+    int &i=z;
     string hashid,ID;
+    Info ReadyToRead;
+    set<Info> NeedToRead;
+    set<Info> NeedToCut;
     /***********读取历史纪录**************/
     FILE* historyRead=fopen("D:\\123.txt","r");
     string  HisRead;
@@ -30,6 +35,7 @@ int main(void)
         Buf_read.readLine(HisRead);
         Map_all[Buf_read.ID]=Buf_read;
         Buf_read.clear();
+        i++;
     }
     fclose(historyRead);
     historyRead=fopen("D:\\NextHashToRead.txt","r");
@@ -40,10 +46,23 @@ int main(void)
     }
     else
     {
-        fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！
-        hashid=read_file_his;
-        fscanf(historyRead,"%s",read_file_his);
-        ID=read_file_his;
+        while(!feof(historyRead))
+        {
+            fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！
+            if(read_file_his[0]!='\0'||read_file_his[0]!='\n')
+            {
+                continue;
+            }
+            ReadyToRead.HashID=read_file_his;
+            fscanf(historyRead,"%s",read_file_his);
+            ReadyToRead.ID=read_file_his;
+            fscanf(historyRead,"%s",read_file_his);
+            ReadyToRead.follower=read_file_his;
+            NeedToRead.insert(ReadyToRead);
+            NeedToCut.insert(ReadyToRead);//无意义，只是为了能让程序运行起来。
+            ReadyToRead.clear();
+        }
+
     }
     fclose(historyRead);
     /*************读取完毕**************/
@@ -56,12 +75,9 @@ int main(void)
 
 
     map<string,Info> &y=Map_all;
-    int z=0;
-    int &i=z;
 
-    Info ReadyToRead;
-    set<Info> NeedToRead;
-    set<Info> NeedToCut;
+
+/*
 
     ReadyToRead.ID=ID;
 
@@ -70,10 +86,10 @@ int main(void)
     ReadyToRead.HashID=hashid;
 
 
-    ReadyToRead.follower=convertToChar(43300);
+    ReadyToRead.follower=convertToChar(3300);
 
     NeedToRead.insert(ReadyToRead);
-    NeedToCut.insert(ReadyToRead);
+    NeedToCut.insert(ReadyToRead);*/
 
 
     while(NeedToCut.size()!=0)
@@ -97,8 +113,12 @@ int main(void)
     {
         SavetoFile = fopen("d:\\NextHashToRead.txt","w");
         string k("1");
-        k=(NeedToRead.begin())->HashID+"\n"+NeedToRead.begin()->ID+" \n";
-        fputs(k.c_str(),SavetoFile);
+        set<Info>::iterator ak=NeedToRead.begin();
+        while (ak!=NeedToRead.end()) {
+            k=ak->HashID+"\n"+ak->ID+" \n"+ak->follower+"\n";
+            fputs(k.c_str(),SavetoFile);
+            ak++;
+        }
         fclose(SavetoFile);
     }
     /************备份完成***************/

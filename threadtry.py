@@ -10,11 +10,13 @@ import time
 
 #########################################################
 def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoName):
-
-    print("NULL =       "+def_NULL)
-    print("def_HashID=  "+def_HashID)
-    print("def_Begin=   "+def_Begin )
-    print("def_End=     "+def_End )
+    global ThreadCount
+    global ErrorCount 
+    ThreadCount+=1
+    #print("NULL =       "+def_NULL)
+    #print("def_HashID=  "+def_HashID)
+    #print("def_Begin=   "+def_Begin )
+    #print("def_End=     "+def_End )
     '''print("def_FileName ="+ def_FileName)
     print("def_NoName = "+def_NoName )'''
     _xsrf ='70d29039e3e8481387e68ca8b5d24c55'#黄中华的浏览器标识符
@@ -46,44 +48,52 @@ def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoNa
     k={'msg':[1,2,3,4,5,1,2,3,4,5]}
     Begin=int(def_Begin)
     End  =int(def_End)
-    print("Read "+def_ID+"'s Follower ing")
-    print("Range From "+str(Begin)+" to "+str(End))
-    print("File Name is "+str(def_FileName))
+    #print("Read "+def_ID+"'s Follower ing "+"Range From "+str(Begin)+" to "+str(End))
+    #print("Range From "+str(Begin)+" to "+str(End))
+    #print("File Name is "+str(def_FileName))
     filecontent=['begin']
     charstring=''
-    while(Begin<End):
-        url     =   "http://www.zhihu.com/node/ProfileFollowersListV2"
-        date1   =   'method=next&params={"hash_id":"'+hashid+'","order_by":"created","offset":'+str(Begin)+'}'+'&_xsrf='+_xsrf
-        date1   =    urllib.parse.quote(date1).replace("%3D","=").replace("%26","&")
-        date1   =    date1.encode(encoding="utf-8")
-        #print("date1=")
-        #print(date1)
-        Post  =urllib.request.Request(url,data=date1,headers=PostHeader)
-        f = urllib.request.urlopen(Post)
-        if f.info().get('Content-Encoding') == 'gzip':
-            k=gzip.decompress(f.read())
-            k=k.decode('gb18030')
-            k=json.loads(k)
-            filecontent=k.get('msg')[:]
-            charstring+="".join(filecontent)
-        else:
-            filecontent=""
-        #print(filecontent)
-        #Begin每次至少会加10，所以不用担心
-        Begin+=len(k.get('msg'))
-        print(str(Begin)+" people has been read")
-        save=charstring
-#print(def_ID+"has readen")
+    try:
+        while(Begin<End):
+            url     =   "http://www.zhihu.com/node/ProfileFollowersListV2"
+            date1   =   'method=next&params={"hash_id":"'+hashid+'","order_by":"created","offset":'+str(Begin)+'}'+'&_xsrf='+_xsrf
+            date1   =    urllib.parse.quote(date1).replace("%3D","=").replace("%26","&")
+            date1   =    date1.encode(encoding="utf-8")
+            #print("date1=")
+            #print(date1)
+            Post  =urllib.request.Request(url,data=date1,headers=PostHeader)
+            f = urllib.request.urlopen(Post)
+            if f.info().get('Content-Encoding') == 'gzip':
+                k=gzip.decompress(f.read())
+                k=k.decode('gb18030')
+                k=json.loads(k)
+                filecontent=k.get('msg')[:]
+                charstring+="".join(filecontent)
+            else:
+                filecontent=""
+            f.close()
+            #print(filecontent)
+            #Begin每次至少会加10，所以不用担心
+            Begin+=len(k.get('msg'))
+            #print(str(Begin)+" people has been read")
+    except:
+            ErrorCount +=1
+            print("Error  at "+def_ID+" part "+def_FileName+" good luck")
+            pass
+    save=charstring
+            #print(def_ID+"has readen")
 
 
     file=open(def_FileName,'wb')
     file.write(save.encode('gb18030'))
     file.close()
-    print(def_FileName+" has writen")
+    #print(def_FileName+" has writen")
+    ThreadCount-=1
     return
 #print(ID+" 's Follower Part"++"has been read")
 #########################################################
-
+ThreadCount=0
+ErrorCount =0
 thread=[]
 f =open("d:\pyRead.txt","r");
 lines = f.readlines(100000)
@@ -97,12 +107,22 @@ while  lines:
         for    content  in  hang:
                 paramter =   content.split("##")
                 thread.append(threading.Thread(target=READZHIHU,args=paramter))
-                print("Thread append")
+                
     lines = f.readlines(100000)
 i=0
+tcountappend=len(thread)-50
+print("Thread begin and all of thread number is "+str(len(thread)))
 for k in thread:
     i+=1
-    k.start()
-    if(i%60==0):
-        time.sleep(5)
-
+    if ThreadCount <70:
+        k.start()
+    else:
+        while ThreadCount >=70:
+            time.sleep(5)
+        k.start()
+    if i%50==0  :      
+        print(str(i)+" process has done")    
+print("All Error is"+str(ErrorCount))        
+while ThreadCount>10 :
+    print("Process nearly end,Now there are "+str(ThreadCount)+"thread running ")
+    time.sleep(15)
