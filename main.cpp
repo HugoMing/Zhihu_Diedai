@@ -12,6 +12,7 @@ void hello()
 int main(void)
 {
     map<string,Info> Map_all;
+    string hashid,ID;
     /***********读取历史纪录**************/
     FILE* historyRead=fopen("D:\\123.txt","r");
     string  HisRead;
@@ -24,20 +25,35 @@ int main(void)
     Info Buf_read;
     while(!feof(historyRead))
     {
-        fgets(read_file_his,LENGTH-2,historyRead);
+        fscanf(historyRead,"%s",read_file_his);
         HisRead=read_file_his;
         Buf_read.readLine(HisRead);
         Map_all[Buf_read.ID]=Buf_read;
         Buf_read.clear();
     }
     fclose(historyRead);
-
+    historyRead=fopen("D:\\NextHashToRead.txt","r");
+    if(historyRead==NULL)
+    {
+        cout<<"错误，无法检测到已读取纪录"<<endl;
+        return 0;
+    }
+    else
+    {
+        fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！
+        hashid=read_file_his;
+        fscanf(historyRead,"%s",read_file_his);
+        ID=read_file_his;
+    }
+    fclose(historyRead);
     /*************读取完毕**************/
-    string hashid,ID;
-    hashid="57842aac37ccd0de3965f9b6e17cb555";
-    hashid="172bdd3dc7eb563194150c423a6014d4";
-    ID="yao-ze-yuan";
-    ID="gayscript";
+
+/**/
+   // hashid="57842aac37ccd0de3965f9b6e17cb555";
+   // hashid="172bdd3dc7eb563194150c423a6014d4";
+  //  ID="yao-ze-yuan";
+  //  ID="gayscript";
+
 
     map<string,Info> &y=Map_all;
     int z=0;
@@ -46,10 +62,15 @@ int main(void)
     Info ReadyToRead;
     set<Info> NeedToRead;
     set<Info> NeedToCut;
+
     ReadyToRead.ID=ID;
+
     ReadyToRead.Name="GayScript";
+
     ReadyToRead.HashID=hashid;
-    ReadyToRead.follower=convertToChar(400);
+
+
+    ReadyToRead.follower=convertToChar(43300);
 
     NeedToRead.insert(ReadyToRead);
     NeedToCut.insert(ReadyToRead);

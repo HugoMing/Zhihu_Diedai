@@ -118,17 +118,14 @@ string  returnErpyCommand(Info  ID)
     string Command;
     int    number=atoi(ID.follower.c_str());
     cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
-    Command+="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py    ";
     int length = (number<CELLLENTH)?LESSGROUP:(number/MAXCONNECT);
-
-
         while(number>length)
         {
-            Command+="##"+ID.HashID+"##"+"N"+"##"+convertToChar(number-length)+"##"+convertToChar(number)+"##"+"Buf"+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt"+"##$";
+            Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(number-length)+"##"+convertToChar(number)+"##"+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt"+"##$";
             number-=length;
         }
 
-    Command+=""+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(length)+"##"+"Buf"+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt";
+    Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(length)+"##"+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt\n";
     //合并文件
     cout<<"Command = "<<Command<<endl;
     return Command;
@@ -141,18 +138,20 @@ string returnCopyBuf(Info ID)
     int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
     if(number<=length)
     {
-       Command+="copy  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
+       Command+="copy  "+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt  "+"c:\\1\\"+ID.ID+"_flower.txt";
     }
     else
     {
-       Command+="copy  Buf("+convertToChar((number%length?1:0))+").txt  ";
+       Command+="copy  ";
        while(number>length)
        {
-           Command+=" +   Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt   ";
+           Command+=""+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt+";
            number-=length;
        }
-       Command+="c:\\1\\"+ID.ID+"_flower.txt";
+       Command+=ID.ID+"("+convertToChar((number%length?1:0))+").txt";
+       Command+=" c:\\1\\"+ID.ID+"_flower.txt";
     }
+    Command+="\n";
     cout<<"Copy_Command = "<<Command<<endl;
     return Command;
 }
@@ -163,17 +162,19 @@ string returnDelBuf(Info ID)
     int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
     if(number<=length)
     {
-       Command+="del  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt  ";
+       Command+="del  "+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt  ";
     }
     else
     {
-       Command+="del  Buf("+convertToChar((number%length?1:0))+").txt  ";
+       Command+="del  ";
        while(number>length)
        {
-           Command+=" +  Buf("+convertToChar(int(number/length)+(number%length?1:0))+").txt   ";
+           Command+=ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt    +  ";
            number-=length;
        }
+       Command+=        ID.ID+"("+convertToChar((number%length?1:0))+").txt  ";
     }
+    Command+="\n";
     cout<<"Del_Command = "<<Command<<endl;
     return Command;
 }
@@ -196,6 +197,7 @@ set<Info> cut(set<Info> NeedToCut,map<string,Info> &Map,int &i)
             fgets(readfile,LENGTH-2,file);
             read+=readfile;
         }
+        cout<<read<<endl;
         fclose(file);
         /*************************************/
         while(read.length()>200)
@@ -265,22 +267,42 @@ set<Info> Read(set<Info> NeedToRead,map<string,Info> &Map)
     set<Info> NeedToCut;
     set<Info>::iterator a;
     a=NeedToRead.begin();
+    FILE    *pyRead,*CpRead;
+    pyRead=fopen("d:\\pyRead.txt","w");
+    CpRead=fopen("d:\\CpRead.txt","w");
     for(;a!=NeedToRead.end();a++)
     {
         string path="c:\\1\\"+a->ID+"_flower.txt";
         FILE *file=fopen(path.c_str(),"r");
         fclose(file);
-        if(file==NULL)
+        if(file==NULL&&Map.count(a->ID)==0)
         {
-        system(returnErpyCommand(*a).c_str());
-        system(returnCopyBuf(*a).c_str());
-        system(returnDelBuf(*a).c_str());
+        fputs(returnErpyCommand(*a).c_str(),pyRead);
+        fputs(returnCopyBuf(*a).c_str(),CpRead);
+        fputs(returnDelBuf(*a).c_str(),CpRead);
         }
 
         (Map)[a->ID]=*a;
         NeedToCut.insert(*a);
-
     }
+    fclose(pyRead);
+    fclose(CpRead);
+    system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py");//启动py
+   /*************************************/
+    CpRead=fopen("d:\\CpRead.txt","r");
+    char          readfile[LENGTH];
+    while(!feof(CpRead))
+    {
+        fgets(readfile,LENGTH-2,CpRead);
+        cout<<"Copy Command = "<<readfile<<endl;
+        system(readfile);
+        fgets(readfile,LENGTH-2,CpRead);
+        cout<<"Del Command = "<<readfile<<endl;
+        system(readfile);
+        fgetc(CpRead);
+    }
+    fclose(CpRead);
+    /**********************************/
     return NeedToCut;
 
 }
