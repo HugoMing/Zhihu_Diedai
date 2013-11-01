@@ -13,6 +13,9 @@ def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoNa
     global ThreadCount
     global ErrorCount 
     ThreadCount+=1
+    time_run=time.time()#获取时间，设定超时时长
+    Run_Force_END=300#最长运行时间不得多于300s
+
     #print("NULL =       "+def_NULL)
     #print("def_HashID=  "+def_HashID)
     #print("def_Begin=   "+def_Begin )
@@ -54,7 +57,7 @@ def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoNa
     filecontent=['begin']
     charstring=''
     try:
-        while(Begin<End):
+        while ( (Begin<End )and((time.time()-time_run)<Run_Force_END) ):#可能不起作用，Socket的时间可能不会记入总时间内，试试吧~
             url     =   "http://www.zhihu.com/node/ProfileFollowersListV2"
             date1   =   'method=next&params={"hash_id":"'+hashid+'","order_by":"created","offset":'+str(Begin)+'}'+'&_xsrf='+_xsrf
             date1   =    urllib.parse.quote(date1).replace("%3D","=").replace("%26","&")
@@ -95,7 +98,7 @@ def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoNa
 ThreadCount=0
 ErrorCount =0
 thread=[]
-f =open("d:\pyRead.txt","r");
+f =open("d:\pyRead.txt","r",encoding= 'gb18030');
 lines = f.readlines(100000)
 while  lines:
     for line in lines:
@@ -114,15 +117,15 @@ tcountappend=len(thread)-50
 print("Thread begin and all of thread number is "+str(len(thread)))
 for k in thread:
     i+=1
-    if ThreadCount <70:
+    if ThreadCount <2000:#知乎发回的信息包，按满载20人/包算的话也有26kb之大，但开在多线程平均也只能达到110kb/s的下载速度，亦即正常是能同时有六个线程并发读取，每秒读取120条信息。考虑到信息中的重复数非常高（300MB的内容最终被压缩至不足15MB）所以，很有必要增开线程，即使错误多些也无妨，重点是读完将服务器内容读完一遍，而不是完整的下载所有信息。#搽，居然只跟网速有关。。。换上有线网之后速度哗哗的。。。。。。
         k.start()
     else:
-        while ThreadCount >=70:
+        while ThreadCount >=2000:
             time.sleep(5)
         k.start()
-    if i%50==0  :      
+    if i%100==0  :
         print(str(i)+" process has done")    
 print("All Error is"+str(ErrorCount))        
-while ThreadCount>10 :
+while ThreadCount>1 :
     print("Process nearly end,Now there are "+str(ThreadCount)+"thread running ")
     time.sleep(5)

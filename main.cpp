@@ -37,6 +37,7 @@ int main(void)
         fclose(historyRead);
     }
     historyRead=fopen("D:\\NextHashToRead.txt","r");
+    int test=1;
     if(historyRead==NULL)
     {
         cout<<"错误，无法检测到已读取纪录"<<endl;
@@ -46,12 +47,23 @@ int main(void)
     {
         while(!feof(historyRead))
         {
+            //test++;
             fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！but fscanf读取不到‘\t’所以必须要用==去判断是否已读取之文件结尾
             ReadyToRead.HashID=read_file_his;
-            fscanf(historyRead,"%s",read_file_his);
+            //cout<<read_file_his<<endl;
+            fgets(read_file_his,LENGTH,historyRead);//去除\r\n囧
+            fgets(read_file_his,LENGTH,historyRead);//当ID间存在空格时，会导致读取失败，所以，这里也应该用fgets！
             ReadyToRead.ID=read_file_his;
+            if(ReadyToRead.ID.length()>=2)
+            {
+                ReadyToRead.ID.erase((ReadyToRead.ID.length()-2),(ReadyToRead.ID.length()-1));
+            }
+            //cout<<ReadyToRead.ID<<" test="<<test<<endl;
             fscanf(historyRead,"%s",read_file_his);
             ReadyToRead.follower=read_file_his;
+            //cout<<read_file_his<<endl;
+            //cout<<"**********************************"<<endl;
+
             if(ReadyToRead.HashID==ReadyToRead.ID&&ReadyToRead.ID==ReadyToRead.follower)
             {
                 continue;
@@ -70,14 +82,14 @@ int main(void)
    // hashid="172bdd3dc7eb563194150c423a6014d4";
   //  ID="yao-ze-yuan";
   //  ID="gayscript";
-
+    int NeedCut=0;
 
     map<string,Info> &y=Map_all;
     while(NeedToCut.size()!=0)
     {
-        int ibuffer=i;
-    NeedToCut= Read(NeedToRead,y);
-    NeedToRead=cut(NeedToCut,y,i);
+    int ibuffer=i;
+    NeedCut= Read(NeedToRead,y);
+    NeedToRead=cut(NeedCut,y,i);
     cout<<i-ibuffer<<" has been added"<<endl;
     ibuffer=i;
     /************备份数据*************/
