@@ -2,17 +2,17 @@
 //
 //#include <thread>
 #include "handle.h"
-
+#include <thread>
 
 int main(void)
 {
+
     map<string,Info> Map_all;
     int z=0;
     int &i=z;
-    string hashid,ID;
     Info ReadyToRead;
     set<Info> NeedToRead;
-    set<Info> NeedToCut;
+    int test;
     /***********读取历史纪录**************/
     FILE* historyRead=fopen("D:\\ZhihuMap.txt","r");//试试改用SSD速度能快点不,SSD读取24M的时候24秒 ， 机械硬盘也是24秒。表示不是读取的问题
     string  HisRead;
@@ -37,7 +37,6 @@ int main(void)
         fclose(historyRead);
     }
     historyRead=fopen("D:\\NextHashToRead.txt","r");
-    int test=1;
     if(historyRead==NULL)
     {
         cout<<"错误，无法检测到已读取纪录"<<endl;
@@ -47,7 +46,7 @@ int main(void)
     {
         while(!feof(historyRead))
         {
-            //test++;
+            test++;
             fscanf(historyRead,"%s",read_file_his);//应该用fscanf，以避免读取到换行符，而且fgets读取到的换行符还没法检测！！！but fscanf读取不到‘\t’所以必须要用==去判断是否已读取之文件结尾
             ReadyToRead.HashID=read_file_his;
             //cout<<read_file_his<<endl;
@@ -68,8 +67,13 @@ int main(void)
             {
                 continue;
             }
+            if(ReadyToRead.HashID.length()!=32)
+            {
+                cout<<"Error in NextHashToRead.txt Record "<<test<<"  "<<endl;
+                ReadyToRead.show();
+                return 1;
+            }
             NeedToRead.insert(ReadyToRead);
-            NeedToCut.insert(ReadyToRead);//无意义，只是为了能让程序运行起来。
             ReadyToRead.clear();
         }
 
@@ -82,11 +86,12 @@ int main(void)
    // hashid="172bdd3dc7eb563194150c423a6014d4";
   //  ID="yao-ze-yuan";
   //  ID="gayscript";
-    int NeedCut=0;
+    int NeedCut=1;
 
     map<string,Info> &y=Map_all;
-    while(NeedToCut.size()!=0)
+    while(NeedCut!=0)
     {
+        cout<<"Now ,there are "<<z<<" people in DateBank"<<endl;
     int ibuffer=i;
     NeedCut= Read(NeedToRead,y);
     NeedToRead=cut(NeedCut,y,i);
@@ -128,7 +133,6 @@ int main(void)
     string SavetoFile_String;
     for(readmap = Map_all.begin();readmap!=Map_all.end();readmap++)
     {
-        (readmap->second).show();
         SavetoFile_String=(readmap->second).content();
         fputs(SavetoFile_String.c_str(),SavetoFile);
     }

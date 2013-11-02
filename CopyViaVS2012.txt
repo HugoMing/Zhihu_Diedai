@@ -1,0 +1,84 @@
+#include <string>
+#include <iostream>
+#include <stdio.h>
+#define	 LENGTH		100000
+using namespace std;
+
+
+
+int main(int argc,char *argv[])
+{
+    FILE	*CommandFile,*SubFile,*MainFile;
+    string  ReadCommand,FileRead,FilePath;
+    string::size_type PosBegin=0,PosEnd=0,FileReadBegin=0,FileReadEnd=0;
+        FilePath=argv[1];
+        cout<<FilePath<<endl;
+    char	readfile[LENGTH];
+        CommandFile=fopen(FilePath.c_str(),"r");
+    //假定ID间没有空格,but,现在有空格了。。。。。。if love、、、、、、
+        int test=0;
+        char* p;
+    while(!feof(CommandFile))
+    {
+                p = fgets(readfile,LENGTH,CommandFile);
+                if(p==NULL)
+                {
+                        continue;//当读取失败或者读至文件结束符时跳过
+                }
+                FileRead+=readfile;
+
+    }
+        while(FileReadBegin<FileRead.length())
+        {
+                if(FileRead.length()<5)
+                {
+                        return 1;
+                }
+                FileReadEnd=FileRead.find("\n",FileReadBegin);
+                ReadCommand=FileRead.substr(FileReadBegin,FileReadEnd-FileReadBegin);
+        PosBegin=ReadCommand.find("&&&");
+        string	subFileStr=ReadCommand.substr(0,PosBegin);
+        string	mainFileStr=ReadCommand.substr(PosBegin+3,ReadCommand.length());
+        string	readSubstr;
+        MainFile=fopen(mainFileStr.c_str(),"w");
+        PosBegin=0;
+
+        while(PosEnd!=subFileStr.length())
+        {
+            PosEnd=subFileStr.find("###",PosBegin);
+            readSubstr=subFileStr.substr(PosBegin,PosEnd-PosBegin);
+            PosEnd+=3;
+            PosBegin=PosEnd;
+            SubFile=fopen(readSubstr.c_str(),"r");
+
+                        test++;
+                        if(SubFile!=NULL)
+                        {
+                                while(!feof(SubFile))
+                                {
+                                        fgets(readfile,LENGTH-2,SubFile);
+                                        fputs(readfile,MainFile);
+                                }
+                                fclose(SubFile);
+                        }
+                        else
+                        {
+                                cout<<"Error : "<<endl;
+                                cout<<readSubstr<<" Couldn't open"<<endl;
+                        }
+
+            //SubFile=fopen(readSubstr.c_str(),"w");
+            //fclose(SubFile);
+                                if(test%100==0)
+                                {
+                                        cout<<test<<" file has readen"<<endl;
+                                }
+        }
+                fclose(MainFile);
+
+                FileReadBegin=FileReadEnd;
+        }
+
+        cout<<"endl";
+        return 1;
+}

@@ -22,7 +22,12 @@ OTHER_FILES += \
     READFolloweetest.py \
     Reader.py \
     123.txt \
-    threadtry.py
+    threadtry.py \
+    threadcopy.py \
+    ThreadCopyViaVS2012.txt \
+    CopyViaVS2012.txt
 
 HEADERS += \
     handle.h
+
+QMAKE_CXXFLAGS += -std=c++0x

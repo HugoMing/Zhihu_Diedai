@@ -1,0 +1,39 @@
+// ConsoleApplication6.cpp : 定义控制台应用程序的入口点。
+//
+
+#include "handle.h"
+#include "stdafx.h"
+#include <thread>
+void sys(int k)
+{
+        char num[200];
+        sprintf(num,"%d",k);
+        string command;
+        command="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Project1.exe  D:\\MeRead";
+        command+=num;
+        command+=".txt";
+        system(command.c_str());
+        return;
+}
+int main(int argv,char *argc[])
+{
+        int t;
+        t = atoi(argc[1]);
+        int k=t;
+        cout<<t<<endl;
+        thread z[10000];
+        while(t>=0)
+        {
+                z[t]=thread(sys,t);
+                t--;
+        }
+        t=k;
+        while(t>=0)
+        {
+                z[t].join();
+                cout<<t<<"has been start"<<endl;
+        }
+
+    return 0;
+}
+

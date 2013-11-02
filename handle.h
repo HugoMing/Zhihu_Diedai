@@ -10,11 +10,12 @@
 #include <vector>
 #include <stdlib.h>
 #include <set>
+#include <io.h>
 
 #define   MAXCONNECT   60//最大连接数
 #define   LESSGROUP    100//最小组距
 #define   CELLLENTH    6000 //分界线
-#define   READFOLLOWERLENGTH 1000000//最小文件记录长度
+#define   READFOLLOWERLENGTH 300000//最小文件记录长度
 #define   MAXFILENAMECOUNT  40//最长合并文件长度
 using namespace std;
 class Info
@@ -41,11 +42,12 @@ public:
     }
     void show(void)
     {
-        cout<<"ID="<<ID<<endl;
-        cout<<"Name="<<Name<<endl;
-        cout<<"Sign="<<Sign<<endl;
-        cout<<"answers="<<answers<<endl;
-        cout<<"HashID="<<HashID<<endl;
+        cout<<"ID       ="<<ID<<endl;
+        cout<<"Name     ="<<Name<<endl;
+        cout<<"Sign     ="<<Sign<<endl;
+        cout<<"answers  ="<<answers<<endl;
+        cout<<"followers="<<follower<<endl;
+        cout<<"HashID   ="<<HashID<<endl;
         return;
     }
     string content(void)
@@ -121,64 +123,51 @@ string  returnErpyCommand(Info  ID)
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
+    string Path="D:\\2\\";
     //cout<<ID.Name<<" has "<<number<<" followEr to read"<<endl;
     int length = (number<CELLLENTH)?LESSGROUP:(number/MAXCONNECT);
         while(number>length)
         {
-            Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(number-length)+"##"+convertToChar(number)+"##"+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt"+"##$";
+            Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(number-length)+"##"+convertToChar(number)+"##"+Path+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt"+"##$";
             number-=length;
         }
 
-    Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(length)+"##"+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt\n";
+    Command+="##"+ID.HashID+"##"+ID.ID+"##"+convertToChar(0)+"##"+convertToChar(length)+"##"+Path+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt\n";
     //合并文件
     //cout<<"Command = "<<Command<<endl;
     return Command;
 
 }
-string returnCopyBuf(Info ID)
+string returnCopyBuf(Info ID)//调用自己写的函数进行合并
 {
     string Command;
     int    number=atoi(ID.follower.c_str());
     int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
+    string Path="D:\\2\\";
     if(number<=length)
     {
-       Command+="copy  "+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt  "+"d:\\1\\"+ID.ID+"_flower.txt";
+       Command+=Path+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt###&&&"+"d:\\1\\"+ID.ID+"_flower.txt";
     }
     else
     {
-       Command+="copy  ";
+       Command+="";
        while(number>length)
        {
-           Command+=""+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt+";
+           Command+=Path+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt###";
            number-=length;
        }
-       Command+=ID.ID+"("+convertToChar((number%length?1:0))+").txt";
-       Command+=" d:\\1\\"+ID.ID+"_flower.txt";
+       Command+=Path+ID.ID+"("+convertToChar((number%length?1:0))+").txt###";
+       Command+="&&&d:\\1\\"+ID.ID+"_flower.txt";
     }
     Command+="\n";
     //cout<<"Copy_Command = "<<Command<<endl;
     return Command;
 }
-string returnDelBuf(Info ID)
+string returnDelBuf(Info ID)//调用自己写的函数将文件合并为同一个值，NeedToCut.txt
 {
     string Command;
-    int    number=atoi(ID.follower.c_str());
-    int length = (number<CELLLENTH)?LESSGROUP:number/MAXCONNECT;
-    if(number<=length)
-    {
-       Command+="del  "+ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt  ";
-    }
-    else
-    {
-       Command+="del  ";
-       while(number>length)
-       {
-           Command+=ID.ID+"("+convertToChar(int(number/length)+(number%length?1:0))+").txt    +  ";
-           number-=length;
-       }
-       Command+=        ID.ID+"("+convertToChar((number%length?1:0))+").txt  ";
-    }
-    Command+="\n";
+    string Path="D:\\1\\";
+    Command+=Path+ID.ID+"_flower.txt###";
     //cout<<"Del_Command = "<<Command<<endl;
     return Command;
 }
@@ -279,7 +268,7 @@ set<Info> cut(int CutCount,map<string,Info> &Map,int &i)
             if(i%1000==0)
             {
                 cout<<i<<" people has read "<<endl;
-                if(i%300000==0)
+                /*if(i%3000000==0)
                 {
                     map<string,Info>::iterator readmap;
                     FILE* SavetoFile;
@@ -291,7 +280,7 @@ set<Info> cut(int CutCount,map<string,Info> &Map,int &i)
                         fputs(SavetoFile_String.c_str(),SavetoFile);
                     }
                     fclose(SavetoFile);
-                }
+                }*/
             }
         }
         count++;
@@ -303,19 +292,23 @@ int Read(set<Info> NeedToRead,map<string,Info> &Map)
     set<Info> NeedToCut;
     set<Info>::iterator a;
     a=NeedToRead.begin();
-    FILE    *pyRead,*CpRead;
+    FILE    *pyRead,*CpRead,*MeRead;
     pyRead=fopen("d:\\pyRead.txt","w");
     CpRead=fopen("d:\\CpRead.txt","w");
+
+    cout<<"Read Function Begin"<<endl;
+    int                 followercount=0;
+    string              MeCommandLine;
+    string              PyCommandLine;
+    string              CyCommandLine;
+    string              MePath;
     for(;a!=NeedToRead.end();a++)
     {
         string path="d:\\1\\"+a->ID+"_flower.txt";
-        FILE *file=fopen(path.c_str(),"r");
-        fclose(file);
-        if(file==NULL&&Map.count(a->ID)==0)
+        if(access(path.c_str(),F_OK)!=0&&Map.count(a->ID)==0)
         {
-        fputs(returnErpyCommand(*a).c_str(),pyRead);
-        fputs(returnCopyBuf(*a).c_str(),CpRead);
-        fputs(returnDelBuf(*a).c_str(),CpRead);
+        PyCommandLine+=returnErpyCommand(*a);
+        CyCommandLine+=returnCopyBuf(*a);
         }
         else
         {
@@ -323,16 +316,17 @@ int Read(set<Info> NeedToRead,map<string,Info> &Map)
             test=1;
         }
 
+        followercount+=atoi(a->follower.c_str());
         (Map)[a->ID]=*a;
         NeedToCut.insert(*a);
     }
+    fputs(PyCommandLine.c_str(),pyRead);
+    fputs(CyCommandLine.c_str(),CpRead);
     fclose(pyRead);
     fclose(CpRead);
     system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py");//启动py
    /*************************************/
-    CpRead=fopen("d:\\CpRead.txt","r");
-    char          readfile[LENGTH];
-    while(!feof(CpRead))
+    /*while(!feof(CpRead))
     {
         fgets(readfile,LENGTH-2,CpRead);//此处只能用gets
         //cout<<"Copy Command = "<<readfile<<endl;
@@ -342,59 +336,61 @@ int Read(set<Info> NeedToRead,map<string,Info> &Map)
         system(readfile);
         //fgetc(CpRead);各种囧，取消getc之后会多读取一条Del指令，不过，幸而无伤大雅
     }
-    fclose(CpRead);
     /**********************************/
-    set<Info>::iterator Cuthelp=NeedToCut.begin();//将多个文件合并为一个大文件
-    int                 followercount=0;
-    int                 fileCount=0;
-    int                 fileNum=0;//总文件数
-    string              MergeCommandLine;
-    MergeCommandLine="Copy   ";
-    for(;Cuthelp!=NeedToCut.end();Cuthelp++)
-    {
+    system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Project1.exe  d:\\CpRead.txt");
+    cout<<followercount<<" relation has been read"<<endl;
+    followercount=0;
+    int filecount=0;
+    char    IntToChar[1000];
 
+    cout<<"Merage Begin"<<endl;
+    MePath="D:\\MeRead";
+    sprintf(IntToChar,"%d",filecount);
+    MePath+=IntToChar;
+    MePath+=".txt";
+    MeRead=fopen(MePath.c_str(),"w");
+    MeCommandLine="";
+
+    for(a=NeedToRead.begin();a!=NeedToRead.end();a++)
+    {
         if(followercount<READFOLLOWERLENGTH)
         {
-            MergeCommandLine+="d:\\1\\"+Cuthelp->ID+"_flower.txt + ";
-            followercount+=atoi(Cuthelp->follower.c_str());
-            fileCount++;
-            if(fileCount>MAXFILENAMECOUNT)
-            {
-                MergeCommandLine+="d:\\MerageBuffer.txt d:\\MerageBuffer.txt";
-                fileCount=0;
-                cout<<"MergeCommandLine = "<<MergeCommandLine<<endl;
-                system(MergeCommandLine.c_str());
-                MergeCommandLine="Copy  ";
-            }
+            followercount+=atoi(a->follower.c_str());
+            MeCommandLine+="d:\\1\\"+a->ID+"_flower.txt###";
         }
         else
         {
-        sprintf(readfile,"%d",fileNum);
-        MergeCommandLine+="d:\\MerageBuffer.txt    d:\\NeedToCut";
-        MergeCommandLine+=readfile;
-        MergeCommandLine+=".txt";
-        cout<<"MergeCommandLine = "<<MergeCommandLine<<endl;
-        system(MergeCommandLine.c_str());
-        fileNum++;
-        followercount=0;
-        MergeCommandLine="Copy   ";
-        CpRead=fopen("d:\\MerageBuffer.txt","w");//清零
-        fputs("",CpRead);
-        fclose(CpRead);
+            followercount=0;
+            sprintf(IntToChar,"%d",filecount);
+            MeCommandLine+="&&&D:\\NeedToCut";
+            MeCommandLine+=IntToChar;
+            MeCommandLine+=".txt";
+            fputs(MeCommandLine.c_str(),MeRead);
+            fclose(MeRead);
+            filecount++;
+            MePath="D:\\MeRead";
+            sprintf(IntToChar,"%d",filecount);
+            MePath+=IntToChar;
+            MePath+=".txt";
+            MeRead=fopen(MePath.c_str(),"w");
+            MeCommandLine="";
         }
     }
-    sprintf(readfile,"%d",fileNum);
-    MergeCommandLine+="d:\\MerageBuffer.txt    d:\\NeedToCut";
-    MergeCommandLine+=readfile;
-    MergeCommandLine+=".txt";
-    cout<<"MergeCommandLine = "<<MergeCommandLine<<endl;
-    system(MergeCommandLine.c_str());
-    fileNum++;
-    CpRead=fopen("d:\\MerageBuffer.txt","w");//清零
-    fputs("",CpRead);
-    fclose(CpRead);
+    if(MeCommandLine.length()>0)
+    {
+        sprintf(IntToChar,"%d",filecount);
+        MeCommandLine+="&&&D:\\NeedToCut";
+        MeCommandLine+=IntToChar;
+        MeCommandLine+=".txt";
+        fputs(MeCommandLine.c_str(),MeRead);
+    }
+    fclose(MeRead);
+    sprintf(IntToChar,"%d",filecount);
+    string systemLine="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\ThreadCopy.exe  ";
+    systemLine+=IntToChar;
+    system(systemLine.c_str());
 
-    return fileNum;
+    return filecount;
 
 }
 #endif // HANDLE_H
