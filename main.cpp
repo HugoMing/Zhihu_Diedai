@@ -41,7 +41,7 @@ int main(void)
     historyRead=fopen("D:\\NextHashToRead.txt","r");
     if(historyRead==NULL)
     {
-        cout<<"错误，无法检测到已读取纪录"<<endl;
+        cout<<"错误，无法检测到已读取纪录"<<endl;//这个必须有
         return 0;
     }
     else

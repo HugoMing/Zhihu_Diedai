@@ -25,7 +25,8 @@ OTHER_FILES += \
     threadtry.py \
     threadcopy.py \
     ThreadCopyViaVS2012.txt \
-    CopyViaVS2012.txt
+    CopyViaVS2012.txt \
+    หตร๗.txt
 
 HEADERS += \
     handle.h
