@@ -246,13 +246,12 @@ set<Info> cut(int CutCount,map<string,Info> &Map,int &i)
         //cout<<"************************************************************"<<endl;
         if(Map.count(Buf.ID)==0)
         {
-            if((atoi(Buf.answers.c_str()))>1)
+            if((atoi(Buf.answers.c_str()))>1&&atoi(Buf.follower.c_str())>0)
             {
                 NeedToRead.insert(Buf);
             }
             else
             {
-                //Buf.show();
                 Map[Buf.ID]=Buf;
             }
         }
@@ -325,19 +324,7 @@ int Read(set<Info> NeedToRead,map<string,Info> &Map)
     fclose(pyRead);
     fclose(CpRead);
     system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\threadtry.py");//启动py
-   /*************************************/
-    /*while(!feof(CpRead))
-    {
-        fgets(readfile,LENGTH-2,CpRead);//此处只能用gets
-        //cout<<"Copy Command = "<<readfile<<endl;
-        system(readfile);
-        fgets(readfile,LENGTH-2,CpRead);
-        //cout<<"Del Command = "<<readfile<<endl;
-        system(readfile);
-        //fgetc(CpRead);各种囧，取消getc之后会多读取一条Del指令，不过，幸而无伤大雅
-    }
-    /**********************************/
-    system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Project1.exe  d:\\CpRead.txt");
+    system("C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\Project1.exe  d:\\CpRead.txt   0");
     cout<<followercount<<" relation has been read"<<endl;
     followercount=0;
     int filecount=0;
@@ -388,6 +375,7 @@ int Read(set<Info> NeedToRead,map<string,Info> &Map)
     sprintf(IntToChar,"%d",filecount);
     string systemLine="C:\\Users\\Administrator\\Documents\\GitHub\\Zhihu_Diedai\\ThreadCopy.exe  ";
     systemLine+=IntToChar;
+    systemLine+="   1";
     system(systemLine.c_str());
 
     return filecount;

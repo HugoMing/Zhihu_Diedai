@@ -90,6 +90,8 @@ def READZHIHU(def_NULL,def_HashID,def_ID,def_Begin,def_End,def_FileName,def_NoNa
     file=open(def_FileName,'wb')
     file.write(save.encode('gb18030'))
     file.close()
+    if ((time.time()-time_run)>Run_Force_END) :
+        print("**************************************************")
     #print(def_FileName+" has writen")
     ThreadCount-=1
     return
@@ -105,7 +107,7 @@ while  lines:
         #print(line)
         buffer=line.split("\n")
         line="".join(buffer)+"##"
-        #print(line)
+        print(line)
         hang = line.split("$")
         for    content  in  hang:
                 paramter =   content.split("##")

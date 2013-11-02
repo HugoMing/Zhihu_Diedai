@@ -17,6 +17,8 @@ int main(void)
     FILE* historyRead=fopen("D:\\ZhihuMap.txt","r");//试试改用SSD速度能快点不,SSD读取24M的时候24秒 ， 机械硬盘也是24秒。表示不是读取的问题
     string  HisRead;
     char    read_file_his[LENGTH];
+    cout<<"Start Running"<<endl;
+    cout<<"Read Local Record"<<endl;
     if(historyRead==NULL)
     {
         cout<<"错误，无法检测到历史纪录"<<endl;
@@ -81,23 +83,21 @@ int main(void)
     fclose(historyRead);
     /*************读取完毕**************/
 
-/**/
-   // hashid="57842aac37ccd0de3965f9b6e17cb555";
-   // hashid="172bdd3dc7eb563194150c423a6014d4";
-  //  ID="yao-ze-yuan";
-  //  ID="gayscript";
     int NeedCut=1;
 
     map<string,Info> &y=Map_all;
     while(NeedCut!=0)
     {
-        cout<<"Now ,there are "<<z<<" people in DateBank"<<endl;
+    cout<<"Now ,there are "<<z<<" people in DateBank"<<endl;
+    cout<<"ZhiHu Spider Ready to Go !"<<endl;
     int ibuffer=i;
     NeedCut= Read(NeedToRead,y);
     NeedToRead=cut(NeedCut,y,i);
+    NeedCut=NeedToRead.size();
     cout<<i-ibuffer<<" has been added"<<endl;
     ibuffer=i;
     /************备份数据*************/
+    cout<<"Now Begin to Backup"<<endl;
     map<string,Info>::iterator readmap;
     FILE* SavetoFile;
     SavetoFile=fopen("D:\\ZhihuMap.txt","w+");
@@ -123,6 +123,8 @@ int main(void)
         }
         fclose(SavetoFile);
     }
+    cout<<"Back up Success!"<<endl;
+    cout<<"There are "<<NeedCut<<" people ready to read"<<endl;
     /************备份完成***************/
 
     }

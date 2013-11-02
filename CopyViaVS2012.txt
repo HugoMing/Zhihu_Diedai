@@ -11,7 +11,13 @@ int main(int argc,char *argv[])
     FILE	*CommandFile,*SubFile,*MainFile;
     string  ReadCommand,FileRead,FilePath;
     string::size_type PosBegin=0,PosEnd=0,FileReadBegin=0,FileReadEnd=0;
+
+        FilePath="d:\\MeRead0.txt";
         FilePath=argv[1];
+        int flag;
+        flag=1;
+        flag=atoi(argv[2]);
+
         cout<<FilePath<<endl;
     char	readfile[LENGTH];
         CommandFile=fopen(FilePath.c_str(),"r");
@@ -32,7 +38,8 @@ int main(int argc,char *argv[])
         {
                 if(FileRead.length()<5)
                 {
-                        return 1;
+                        cout<<"FileRead.length()<5"<<endl;
+                        return 0;
                 }
                 FileReadEnd=FileRead.find("\n",FileReadBegin);
                 ReadCommand=FileRead.substr(FileReadBegin,FileReadEnd-FileReadBegin);
@@ -43,7 +50,7 @@ int main(int argc,char *argv[])
         MainFile=fopen(mainFileStr.c_str(),"w");
         PosBegin=0;
 
-        while(PosEnd!=subFileStr.length())
+        while(PosEnd<subFileStr.length())
         {
             PosEnd=subFileStr.find("###",PosBegin);
             readSubstr=subFileStr.substr(PosBegin,PosEnd-PosBegin);
@@ -66,19 +73,24 @@ int main(int argc,char *argv[])
                                 cout<<"Error : "<<endl;
                                 cout<<readSubstr<<" Couldn't open"<<endl;
                         }
-
-            //SubFile=fopen(readSubstr.c_str(),"w");
-            //fclose(SubFile);
-                                if(test%100==0)
-                                {
-                                        cout<<test<<" file has readen"<<endl;
-                                }
+                        if(flag==0)
+                        {
+            remove(readSubstr.c_str());
+                        }
+                        if(test%100==0)
+                        {
+                                cout<<test<<" file has readen"<<endl;
+                        }
         }
                 fclose(MainFile);
-
-                FileReadBegin=FileReadEnd;
+                if(FileReadEnd==-1)
+                {
+                        cout<<"File Read over"<<endl;
+                        return 0;
+                }
+                FileReadBegin=FileReadEnd+1;
         }
 
         cout<<"endl";
-        return 1;
+        return 0;
 }
