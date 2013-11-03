@@ -32,6 +32,10 @@ int main(void)
             fgets(read_file_his,LENGTH,historyRead);//此处必须用fgets，否则读取不到‘\t’
             HisRead=read_file_his;
             Buf_read.readLine(HisRead);
+            if(Buf_read.Name.length()==0||Buf_read.ID.length()<3)
+            {
+                continue;
+            }
             Map_all[Buf_read.ID]=Buf_read;
             Buf_read.clear();
             i++;
@@ -86,16 +90,16 @@ int main(void)
     int NeedCut=1;
 
     map<string,Info> &y=Map_all;
+    int ibuffer=Map_all.size();
     while(NeedCut!=0)
     {
     cout<<"Now ,there are "<<z<<" people in DateBank"<<endl;
-    cout<<"ZhiHu Spider Ready to Go !"<<endl;
-    int ibuffer=i;
+    cout<<"ZhiHu Spider Ready to Go !"<<endl;  
     NeedCut= Read(NeedToRead,y);
     NeedToRead=cut(NeedCut,y,i);
     NeedCut=NeedToRead.size();
-    cout<<i-ibuffer<<" has been added"<<endl;
-    ibuffer=i;
+    cout<<Map_all.size()-ibuffer<<" has been added"<<endl;
+    ibuffer=Map_all.size();
     /************备份数据*************/
     cout<<"Now Begin to Backup"<<endl;
     map<string,Info>::iterator readmap;
@@ -141,6 +145,7 @@ int main(void)
     fclose(SavetoFile);
     /************备份完成***************/
     cout<<"Zhihu has readen"<<endl;
+    cout<<"There are "<<Map_all.size()<<" people in DateBank"<<endl<<"Having Fun!";
     return 0;
 }
 
